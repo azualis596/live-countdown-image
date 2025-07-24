@@ -1,11 +1,11 @@
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 
-# תאריך האירוע שלך (שנה, חודש, יום, שעה, דקה, שנייה)
+# זמן האירוע שלך
 event_time = datetime(2025, 8, 5, 22, 30, 0)
 
-# צור תמונה בגודל 600x200 עם רקע לבן
-img = Image.new('RGB', (600, 200), color=(255, 255, 255))
+# צור תמונה שקופה בגודל 800x200
+img = Image.new("RGBA", (800, 200), (255, 255, 255, 0))
 draw = ImageDraw.Draw(img)
 
 # חישוב זמן נותר
@@ -17,17 +17,18 @@ if remaining.total_seconds() <= 0:
 else:
     days = remaining.days
     hours, rem = divmod(remaining.seconds, 3600)
-    minutes, seconds = divmod(rem, 60)
-    text = f"⏳ נותרו {days} ימים {hours:02}:{minutes:02}:{seconds:02}"
+    minutes, _ = divmod(rem, 60)
+    text = f"נפגשים בעוד: {days} ימים {hours} שעות {minutes} דקות"
 
-# נסה להשתמש בפונט arial אם קיים, אחרת ברירת מחדל
-try:
-    font = ImageFont.truetype("arial.ttf", 32)
-except:
-    font = ImageFont.load_default()
+# פונט בסיסי, טקסט שחור
+font = ImageFont.load_default()
 
-# כתוב את הטקסט על התמונה
-draw.text((30, 80), text, font=font, fill=(0, 0, 0))
+# מיקום הטקסט – מרכז אופקי
+text_width, text_height = draw.textsize(text, font=font)
+x = (800 - text_width) // 2
+y = (200 - text_height) // 2
 
-# שמור את התמונה בשם קבוע
+draw.text((x, y), text, fill=(0, 0, 0), font=font)
+
+# שמור את התמונה עם רקע שקוף
 img.save("countdown.png")
