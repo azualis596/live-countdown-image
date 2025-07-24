@@ -1,39 +1,38 @@
-from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
+from PIL import Image, ImageDraw, ImageFont
 
-# 🎯 תאריך יעד לאירוע
-event_time = datetime(2025, 8, 5, 22, 30, 0)
+# יצירת רקע שקוף
+width, height = 800, 200
+image = Image.new("RGBA", (width, height), (255, 255, 255, 0))
+draw = ImageDraw.Draw(image)
 
-# 🖼️ צור תמונה 800x200 עם רקע שקוף
-img = Image.new("RGBA", (800, 200), (255, 255, 255, 0))
-draw = ImageDraw.Draw(img)
+# יעד הספירה לאחור
+target_date = datetime(2025, 8, 1, 18, 0, 0)  # שנה לפי תאריך היעד שלך
+now = datetime.now()
+delta = target_date - now
 
-# 🧠 חישוב הזמן הנותר
-now = datetime.utcnow()
-remaining = event_time - now
+days = delta.days
+hours = delta.seconds // 3600
+minutes = (delta.seconds % 3600) // 60
 
-if remaining.total_seconds() <= 0:
-    text = "🎉 האירוע התחיל!"
-else:
-    days = remaining.days
-    hours, rem = divmod(remaining.seconds, 3600)
-    minutes, _ = divmod(rem, 60)
-    text = f"נפגשים בעוד: {days} ימים {hours} שעות {minutes} דקות"
+# טקסט לספירה לאחור
+text = f"נפגשים בעוד: {days} ימים {hours:02} שעות {minutes:02} דקות"
 
-# 🅰️ הגדרת פונט ברירת מחדל (אפשר לשדרג אחר כך)
-font = ImageFont.load_default()
+# טען פונט בגודל מתאים (אם אין TTF – ישמש ברירת מחדל)
+try:
+    font = ImageFont.truetype("arial.ttf", 48)  # אפשר גם DejaVuSans.ttf
+except:
+    font = ImageFont.load_default()
 
-# 📏 חישוב גודל הטקסט עם textbbox במקום textsize
+# חישוב מיקום מרכזי
 bbox = draw.textbbox((0, 0), text, font=font)
 text_width = bbox[2] - bbox[0]
 text_height = bbox[3] - bbox[1]
+x = (width - text_width) // 2
+y = (height - text_height) // 2
 
-# 🧭 מיקום מרכזי
-x = (800 - text_width) // 2
-y = (200 - text_height) // 2
+# ציור הטקסט
+draw.text((x, y), text, font=font, fill="black")
 
-# 🖋️ ציור הטקסט
-draw.text((x, y), text, font=font, fill=(0, 0, 0))
-
-# 💾 שמירה עם רקע שקוף
-img.save("countdown.png")
+# שמירת התמונה
+image.save("countdown.png")
