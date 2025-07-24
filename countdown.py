@@ -1,14 +1,14 @@
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 
-# זמן האירוע שלך
+# 🎯 תאריך יעד לאירוע
 event_time = datetime(2025, 8, 5, 22, 30, 0)
 
-# צור תמונה שקופה בגודל 800x200
+# 🖼️ צור תמונה 800x200 עם רקע שקוף
 img = Image.new("RGBA", (800, 200), (255, 255, 255, 0))
 draw = ImageDraw.Draw(img)
 
-# חישוב זמן נותר
+# 🧠 חישוב הזמן הנותר
 now = datetime.utcnow()
 remaining = event_time - now
 
@@ -20,15 +20,20 @@ else:
     minutes, _ = divmod(rem, 60)
     text = f"נפגשים בעוד: {days} ימים {hours} שעות {minutes} דקות"
 
-# פונט בסיסי, טקסט שחור
+# 🅰️ הגדרת פונט ברירת מחדל (אפשר לשדרג אחר כך)
 font = ImageFont.load_default()
 
-# מיקום הטקסט – מרכז אופקי
-text_width, text_height = draw.textsize(text, font=font)
+# 📏 חישוב גודל הטקסט עם textbbox במקום textsize
+bbox = draw.textbbox((0, 0), text, font=font)
+text_width = bbox[2] - bbox[0]
+text_height = bbox[3] - bbox[1]
+
+# 🧭 מיקום מרכזי
 x = (800 - text_width) // 2
 y = (200 - text_height) // 2
 
-draw.text((x, y), text, fill=(0, 0, 0), font=font)
+# 🖋️ ציור הטקסט
+draw.text((x, y), text, font=font, fill=(0, 0, 0))
 
-# שמור את התמונה עם רקע שקוף
+# 💾 שמירה עם רקע שקוף
 img.save("countdown.png")
