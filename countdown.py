@@ -16,9 +16,6 @@ width, height = 800, 200
 image = Image.new("RGBA", (width, height), (255, 255, 255, 0))  # רקע שקוף
 draw = ImageDraw.Draw(image)
 
-# טעינת פונט (שחור ובגדול)
-font = ImageFont.truetype("DejaVuSans-Bold.ttf", 60)
-
 # טקסט להצגה
 text = f"{days:02d} Days  {hours:02d} Hours  {minutes:02d} Min"
 
