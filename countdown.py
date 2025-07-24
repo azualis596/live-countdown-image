@@ -1,33 +1,35 @@
-from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime, timedelta
 
-# יעד הספירה לאחור
-target_date = datetime(2025, 8, 10, 22, 0, 0)  # שנה, חודש, יום, שעה, דקה, שנייה
+# הגדרת יעד (למשל בעוד 1 יום)
+target_time = datetime.utcnow() + timedelta(days=1)
 
 # חישוב הזמן שנותר
 now = datetime.utcnow()
-remaining = target_date - now
-days = remaining.days
-hours, remainder = divmod(remaining.seconds, 3600)
+delta = target_time - now
+days = delta.days
+hours, remainder = divmod(delta.seconds, 3600)
 minutes, seconds = divmod(remainder, 60)
 
-# יצירת תמונה שקופה בגודל 800x200
+# יצירת תמונה עם רקע שקוף
 width, height = 800, 200
-image = Image.new("RGBA", (width, height), (255, 255, 255, 0))  # רקע שקוף
+image = Image.new("RGBA", (width, height), (255, 255, 255, 0))
 draw = ImageDraw.Draw(image)
 
-# טקסט להצגה
-text = f"{days:02d} Days  {hours:02d} Hours  {minutes:02d} Min"
+# פונט ברירת מחדל
+font = ImageFont.load_default()
 
-# חישוב מיקום מרכזי
+# טקסט להצגה
+text = f"Meeting in: {days:02} Days {hours:02} Hours {minutes:02} Min"
+
+# מיקום מרכזי
 text_bbox = draw.textbbox((0, 0), text, font=font)
 text_width = text_bbox[2] - text_bbox[0]
 text_height = text_bbox[3] - text_bbox[1]
-x = (width - text_width) // 2
-y = (height - text_height) // 2
+position = ((width - text_width) // 2, (height - text_height) // 2)
 
-# כתיבת טקסט בצבע שחור
-draw.text((x, y), text, font=font, fill=(0, 0, 0, 255))
+# ציור הטקסט
+draw.text(position, text, fill="black", font=font)
 
-# שמירת הקובץ
+# שמירה
 image.save("countdown.png")
