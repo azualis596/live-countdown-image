@@ -1,38 +1,36 @@
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
-# יצירת רקע שקוף
+# יעד הספירה לאחור
+target_date = datetime(2025, 8, 10, 22, 0, 0)  # שנה, חודש, יום, שעה, דקה, שנייה
+
+# חישוב הזמן שנותר
+now = datetime.utcnow()
+remaining = target_date - now
+days = remaining.days
+hours, remainder = divmod(remaining.seconds, 3600)
+minutes, seconds = divmod(remainder, 60)
+
+# יצירת תמונה שקופה בגודל 800x200
 width, height = 800, 200
-image = Image.new("RGBA", (width, height), (255, 255, 255, 0))
+image = Image.new("RGBA", (width, height), (255, 255, 255, 0))  # רקע שקוף
 draw = ImageDraw.Draw(image)
 
-# יעד הספירה לאחור
-target_date = datetime(2025, 8, 1, 18, 0, 0)  # שנה לפי תאריך היעד שלך
-now = datetime.now()
-delta = target_date - now
+# טעינת פונט (שחור ובגדול)
+font = ImageFont.truetype("DejaVuSans-Bold.ttf", 60)
 
-days = delta.days
-hours = delta.seconds // 3600
-minutes = (delta.seconds % 3600) // 60
-
-# טקסט לספירה לאחור
-text = f"נפגשים בעוד: {days} ימים {hours:02} שעות {minutes:02} דקות"
-
-# טען פונט בגודל מתאים (אם אין TTF – ישמש ברירת מחדל)
-try:
-    font = ImageFont.truetype("arial.ttf", 48)  # אפשר גם DejaVuSans.ttf
-except:
-    font = ImageFont.load_default()
+# טקסט להצגה
+text = f"{days:02d} Days  {hours:02d} Hours  {minutes:02d} Min"
 
 # חישוב מיקום מרכזי
-bbox = draw.textbbox((0, 0), text, font=font)
-text_width = bbox[2] - bbox[0]
-text_height = bbox[3] - bbox[1]
+text_bbox = draw.textbbox((0, 0), text, font=font)
+text_width = text_bbox[2] - text_bbox[0]
+text_height = text_bbox[3] - text_bbox[1]
 x = (width - text_width) // 2
 y = (height - text_height) // 2
 
-# ציור הטקסט
-draw.text((x, y), text, font=font, fill="black")
+# כתיבת טקסט בצבע שחור
+draw.text((x, y), text, font=font, fill=(0, 0, 0, 255))
 
-# שמירת התמונה
+# שמירת הקובץ
 image.save("countdown.png")
